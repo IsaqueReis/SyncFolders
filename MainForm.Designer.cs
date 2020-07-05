@@ -179,6 +179,7 @@
             this.Controls.Add(this.outputTextBox);
             this.Controls.Add(this.inputTextBox);
             this.Controls.Add(this.syncButton);
+            this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "Sincronize suas pastas";
             this.ResumeLayout(false);
