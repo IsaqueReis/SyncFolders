@@ -1,4 +1,4 @@
-# SyncFolders
+# DirectorySyncTool
 
 Sincronize suas pastas locais em tempo real. 
 
