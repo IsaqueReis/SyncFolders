@@ -10,7 +10,7 @@ Lista de Tarefas
 ===========================================
 
 - [ ] Se a pasta não existir no diretório de destino, crie 
-- [ ] Configurar o tempo de atualização 
+- [ ] Configurar o timer de atualização 
 - [ ] Cópia de arquivos e diretórios assíncrona 
 - [ ] Executar em segundo plano 
 - [ ] Refatorar projeto
