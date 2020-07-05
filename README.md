@@ -14,3 +14,4 @@ Lista de Tarefas
 - [ ] Cópia de arquivos e diretórios assíncrona 
 - [ ] Executar em segundo plano 
 - [ ] Refatorar projeto
+- [ ] Migrar para .netcore, transformar em multiplataforma
