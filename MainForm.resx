@@ -117,4 +117,24 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <metadata name="folderBrowserDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="originFolder.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAABGdBTUEAALGPC/xhBQAAAIdJREFUSEvt
+        lkEKgDAMBHvyUaLvUx+qPkN3Cy20RNAmepAMDFgIWdJDY/glHVzgBg/BFc6QdSrYRAqoZZ2Kq0lqd6hC
+        amplce1SgbXx2tOh58GYAbI3J8tBb5H7e9BTPKgZD2rGg5r5PohPOD/4pFszQvaOa+LuP4PGCcY1y7A0
+        maXFKv+AEE4Ef76k7L8DIwAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="destinationFolder.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAABGdBTUEAALGPC/xhBQAAAIdJREFUSEvt
+        lkEKgDAMBHvyUaLvUx+qPkN3Cy20RNAmepAMDFgIWdJDY/glHVzgBg/BFc6QdSrYRAqoZZ2Kq0lqd6hC
+        amplce1SgbXx2tOh58GYAbI3J8tBb5H7e9BTPKgZD2rGg5r5PohPOD/4pFszQvaOa+LuP4PGCcY1y7A0
+        maXFKv+AEE4Ef76k7L8DIwAAAABJRU5ErkJggg==
+</value>
+  </data>
 </root>
