@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Timers;
 using System.Windows.Forms;
+using SyncFolders.Util;
 
 namespace SyncFolders
 {
@@ -21,11 +22,15 @@ namespace SyncFolders
         public string InputDir { get; set; }
         public string OutputDir { get; set; }
 
-        public void WatchDirectory(bool realTime)
+        public void WatchDirectory(bool realTime, long timeInMinutes = 0)
         {
             try
             {
-                var timer = new System.Timers.Timer() { Interval = 300000, AutoReset = true};
+                var timer = new System.Timers.Timer() 
+                { 
+                    Interval = MinutesToMilis(timeInMinutes) == 0 ? 60000 : MinutesToMilis(timeInMinutes), 
+                    AutoReset = true
+                };
 
                 var watcher = new FileSystemWatcher
                 {
@@ -37,7 +42,7 @@ namespace SyncFolders
                     Filter = "*.*"
                 };
 
-                if (!realTime)
+                if (realTime)
                 {
                     watcher.Changed += new FileSystemEventHandler(OnChanged);
                     watcher.Created += new FileSystemEventHandler(OnCreated);
@@ -46,17 +51,19 @@ namespace SyncFolders
                     watcher.Error += new ErrorEventHandler(OnError);
 
                     watcher.EnableRaisingEvents = true;
-
+                    timer.Enabled = false;
                     return;
                 }
 
                 HandleError(null, true, "Atenção, feche qualquer programa que esteja fazendo operações de leitura neste diretório.");
+
                 timer.Enabled = true;
                 timer.Elapsed += OnFullSave;
 
                 ChangeLabel("statusLabel", "Aguardando para sincronizar...", Color.DarkOrange);
 
             }
+
             catch (IOException e)
             {
                 MessageBox.Show(e.Message, "Erro ao monitorar o diretório", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -64,6 +71,11 @@ namespace SyncFolders
                 ChangeLabel("statusLabel", "Erro ao sincronizar", Color.Red);
             }
 
+        }
+
+        private static long MinutesToMilis(long minutes)
+        {
+            return minutes * 60000;
         }
 
         private static void ChangeLabel(string labelId, string text, Color color)

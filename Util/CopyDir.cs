@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace SyncFolders
+namespace SyncFolders.Util
 {
     public class CopyDir
     {

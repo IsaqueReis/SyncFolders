@@ -42,11 +42,15 @@
             this.lastChangeLabel = new System.Windows.Forms.Label();
             this.statusLabel = new System.Windows.Forms.Label();
             this.realTimeCheckbox = new System.Windows.Forms.CheckBox();
+            this.numericInputTimer = new System.Windows.Forms.NumericUpDown();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.numericInputTimer)).BeginInit();
             this.SuspendLayout();
             // 
             // syncButton
             // 
-            this.syncButton.Location = new System.Drawing.Point(290, 137);
+            this.syncButton.Location = new System.Drawing.Point(290, 182);
             this.syncButton.Name = "syncButton";
             this.syncButton.Size = new System.Drawing.Size(101, 42);
             this.syncButton.TabIndex = 0;
@@ -124,18 +128,18 @@
             // 
             this.infoChangeLabel.AutoSize = true;
             this.infoChangeLabel.ForeColor = System.Drawing.Color.DarkGreen;
-            this.infoChangeLabel.Location = new System.Drawing.Point(82, 166);
+            this.infoChangeLabel.Location = new System.Drawing.Point(9, 211);
             this.infoChangeLabel.Name = "infoChangeLabel";
             this.infoChangeLabel.Size = new System.Drawing.Size(110, 13);
             this.infoChangeLabel.TabIndex = 10;
-            this.infoChangeLabel.Text = "Última atualização as:";
+            this.infoChangeLabel.Text = "Última atualização às:";
             // 
             // lastChangeLabel
             // 
             this.lastChangeLabel.AutoSize = true;
             this.lastChangeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lastChangeLabel.ForeColor = System.Drawing.Color.DarkGreen;
-            this.lastChangeLabel.Location = new System.Drawing.Point(198, 166);
+            this.lastChangeLabel.Location = new System.Drawing.Point(125, 211);
             this.lastChangeLabel.Name = "lastChangeLabel";
             this.lastChangeLabel.Size = new System.Drawing.Size(39, 13);
             this.lastChangeLabel.TabIndex = 11;
@@ -146,7 +150,7 @@
             this.statusLabel.AutoSize = true;
             this.statusLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.statusLabel.ForeColor = System.Drawing.Color.Red;
-            this.statusLabel.Location = new System.Drawing.Point(82, 137);
+            this.statusLabel.Location = new System.Drawing.Point(9, 182);
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(140, 13);
             this.statusLabel.TabIndex = 13;
@@ -161,12 +165,41 @@
             this.realTimeCheckbox.TabIndex = 14;
             this.realTimeCheckbox.Text = "Tempo real?";
             this.realTimeCheckbox.UseVisualStyleBackColor = true;
+            this.realTimeCheckbox.CheckedChanged += new System.EventHandler(this.RealTimeCheckboxCheckedChanged);
+            // 
+            // numericInputTimer
+            // 
+            this.numericInputTimer.Location = new System.Drawing.Point(290, 154);
+            this.numericInputTimer.Name = "numericInputTimer";
+            this.numericInputTimer.Size = new System.Drawing.Size(49, 20);
+            this.numericInputTimer.TabIndex = 15;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(287, 138);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(76, 13);
+            this.label1.TabIndex = 16;
+            this.label1.Text = "Sincronizar em";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(343, 161);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(43, 13);
+            this.label2.TabIndex = 17;
+            this.label2.Text = "minutos";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(403, 191);
+            this.ClientSize = new System.Drawing.Size(403, 236);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.numericInputTimer);
             this.Controls.Add(this.realTimeCheckbox);
             this.Controls.Add(this.statusLabel);
             this.Controls.Add(this.lastChangeLabel);
@@ -182,6 +215,7 @@
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "Sincronize suas pastas";
+            ((System.ComponentModel.ISupportInitialize)(this.numericInputTimer)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -202,6 +236,9 @@
         private System.Windows.Forms.Label lastChangeLabel;
         private System.Windows.Forms.Label statusLabel;
         private System.Windows.Forms.CheckBox realTimeCheckbox;
+        private System.Windows.Forms.NumericUpDown numericInputTimer;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
     }
 }
 
