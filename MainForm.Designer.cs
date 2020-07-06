@@ -212,6 +212,7 @@
             this.Controls.Add(this.outputTextBox);
             this.Controls.Add(this.inputTextBox);
             this.Controls.Add(this.syncButton);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "Sincronize suas pastas";

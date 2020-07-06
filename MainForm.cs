@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using Serilog;
 
 namespace SyncFolders
 {
@@ -43,6 +44,11 @@ namespace SyncFolders
         private void RealTimeCheckboxCheckedChanged(object sender, EventArgs e)
         {
             numericInputTimer.Enabled = !numericInputTimer.Enabled;
+        }
+
+        private void CloseLogger(object sender, EventArgs e)
+        {
+            Log.CloseAndFlush();
         }
     }
 }

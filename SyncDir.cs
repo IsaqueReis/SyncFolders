@@ -4,19 +4,30 @@ using System.IO;
 using System.Linq;
 using System.Timers;
 using System.Windows.Forms;
+using Serilog;
 using SyncFolders.Util;
 
 namespace SyncFolders
 {
     public class SyncDir
     {
+        private readonly Logger _logger = new Logger();
+
         public enum DirectoryChangeEventType
         {
             OnChange,
             OnCreate,
+            OnCreateDir,
             OnDelete,
+            OnDeleteDir,
             OnRename,
+            OnRenameDir,
             OnFullSave
+        }
+
+        public SyncDir()
+        {
+            _logger.InitializeLogger();
         }
 
         public string InputDir { get; set; }
@@ -59,18 +70,32 @@ namespace SyncFolders
 
                 timer.Enabled = true;
                 timer.Elapsed += OnFullSave;
+                watcher.EnableRaisingEvents = false;
 
                 ChangeLabel("statusLabel", "Aguardando para sincronizar...", Color.DarkOrange);
-
             }
 
             catch (IOException e)
             {
+                Log.Error("Erro ao monitorar o diretório {0}", InputDir);
+
                 MessageBox.Show(e.Message, "Erro ao monitorar o diretório", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 ChangeLabel("lastChangeLabel", DateTime.Now.ToShortTimeString(), Color.Green);
                 ChangeLabel("statusLabel", "Erro ao sincronizar", Color.Red);
             }
 
+        }
+
+        private void CreateFileDirectoryIfNotExists(string fileName)
+        {
+            var dirName = string.IsNullOrWhiteSpace(Path.GetDirectoryName(fileName))
+                ? string.Empty 
+                : Path.GetDirectoryName(fileName);
+
+            var newDir = Path.Combine(OutputDir, dirName);
+
+            if (!Directory.Exists(newDir))
+                Directory.CreateDirectory(newDir);
         }
 
         private static long MinutesToMilis(long minutes)
@@ -93,6 +118,8 @@ namespace SyncFolders
 
         private static void HandleError(Exception e, bool info = false, string message = "")
         {
+            Log.Error(message);
+
             MessageBox.Show(info ? message : e.Message,
                 "Erro ao monitorar o diretório", MessageBoxButtons.OK, info ? MessageBoxIcon.Information : MessageBoxIcon.Error);
         }
@@ -109,10 +136,12 @@ namespace SyncFolders
 
                     if (File.Exists(fullName))
                     {
+                        CreateFileDirectoryIfNotExists(fileName);
+
                         try
                         {
                             File.Copy(fullName, destinationFile, true);
-                            Console.WriteLine("[MODIFICACAO] {0}, no local {1} foi modificado.", fileName, destinationFile);
+                            Log.Information("[MODIFICAÇÃO] {0}, no local {1} foi modificado.", fileName, destinationFile);
                         }
                         catch (Exception e)
                         {
@@ -122,7 +151,7 @@ namespace SyncFolders
                     }
                     else
                     {
-                        Console.WriteLine("[MODIFICACAO] Arquivo {0} não existe no diretório de origem.", fullName);
+                        Log.Information("[MODIFICAÇÃO] Arquivo {0} não existe no diretório de origem.", fullName);
                     }
 
                     ChangeLabel("lastChangeLabel", DateTime.Now.ToShortTimeString(), Color.Green);
@@ -136,10 +165,12 @@ namespace SyncFolders
 
                         if (File.Exists(fullName))
                         {
+                            CreateFileDirectoryIfNotExists(fileName);
+
                             try
                             {
                                 File.Copy(fullName, destinationFile);
-                                Console.WriteLine("[CRIACAO] {0}, no local {1} foi criado.", fileName, destinationFile);
+                                Log.Information("[CRIAÇÃO] {0}, no local {1} foi criado.", fileName, destinationFile);
                             }
                             catch (Exception e)
                             {
@@ -149,8 +180,35 @@ namespace SyncFolders
                         }
                         else
                         {
-                            Console.WriteLine("[CRIACAO] Arquivo {0} não existe no diretório de origem.", fullName);
+                            Log.Information("[CRIAÇÃO] Arquivo {0} não existe no diretório de origem.", fullName);
                         }
+
+                    ChangeLabel("lastChangeLabel", DateTime.Now.ToShortTimeString(), Color.Green);
+                    ChangeLabel("statusLabel", "Está sincronizando", Color.Green);
+                    break;
+                }
+
+                case DirectoryChangeEventType.OnCreateDir:
+                {
+                    var destinationDir = Path.Combine(OutputDir, fileName);
+
+                    if (!Directory.Exists(destinationDir))
+                    {
+                        try
+                        {
+                            Directory.CreateDirectory(destinationDir);
+                            Log.Information("[CRIAÇÃO DE DIRETÓRIO] {0}, no local {1} foi criado.", fileName, destinationDir);
+                        }
+                        catch (Exception e)
+                        {
+                            HandleError(e);
+                        }
+
+                    }
+                    else
+                    {
+                        Log.Information("[CRIAÇÃO DE DIRETÓRIO] Diretório {0} já existe.", destinationDir);
+                    }
 
                     ChangeLabel("lastChangeLabel", DateTime.Now.ToShortTimeString(), Color.Green);
                     ChangeLabel("statusLabel", "Está sincronizando", Color.Green);
@@ -166,7 +224,7 @@ namespace SyncFolders
                         try
                         {
                             File.Delete(destinationFile);
-                            Console.WriteLine("[DELECAO] {0}, no local {1} foi deletado.", fileName, destinationFile);
+                            Log.Information("[DELEÇÃO] {0}, no local {1} foi deletado.", fileName, destinationFile);
                         }
                         catch (Exception e)
                         {
@@ -176,7 +234,36 @@ namespace SyncFolders
                     }
                     else
                     {
-                        Console.WriteLine("[DELECAO] Arquivo {0} não existe no diretório de origem.", destinationFile);
+                        Log.Information("[DELEÇÃO] Arquivo {0} não existe no diretório de origem.", destinationFile);
+                    }
+
+                    ChangeLabel("lastChangeLabel", DateTime.Now.ToShortTimeString(), Color.Green);
+                    ChangeLabel("statusLabel", "Está sincronizando", Color.Green);
+                    break;
+                }
+
+                case DirectoryChangeEventType.OnDeleteDir:
+                {
+                    var destinationDir = Path.Combine(OutputDir, fileName);
+
+                    if (Directory.Exists(destinationDir))
+                    {
+                        try
+                        {
+                            var dirToDelete = new DirectoryInfo(destinationDir);
+                            dirToDelete.Delete(true);
+                            Log.Information("[DELEÇÃO DE DIRETÓRIO] {0}, no local {1} foi deletado.", fileName, destinationDir);
+                        }
+                        catch (Exception e)
+                        {
+                            HandleError(e);
+                        }
+
+                    }
+
+                    else
+                    {
+                        Log.Information("[DELEÇÃO DE DIRETÓRIO] Diretório {0} não existe.", destinationDir);
                     }
 
                     ChangeLabel("lastChangeLabel", DateTime.Now.ToShortTimeString(), Color.Green);
@@ -194,7 +281,7 @@ namespace SyncFolders
                             try
                             {
                                 File.Move(destinationOldName, destinationNewName);
-                                Console.WriteLine(" {0} foi renomeado para {1}", destinationOldName, destinationNewName);
+                                Log.Information(" {0} foi renomeado para {1}", destinationOldName, destinationNewName);
                             }
                             catch (Exception e)
                             {
@@ -203,8 +290,35 @@ namespace SyncFolders
                         }
                         else
                         {
-                            Console.WriteLine("[RENOMEACAO] Arquivo {0} não existe no diretório de origem.", destinationOldName);
+                            Log.Information("[RENOMEAÇÃO] Arquivo {0} não existe no diretório de origem.", destinationOldName);
                         }
+
+                    ChangeLabel("lastChangeLabel", DateTime.Now.ToShortTimeString(), Color.Green);
+                    ChangeLabel("statusLabel", "Está sincronizando", Color.Green);
+                    break;
+                }
+
+                case DirectoryChangeEventType.OnRenameDir:
+                {
+                    var destinationOldName = Path.Combine(OutputDir, oldName);
+                    var destinationNewName = Path.Combine(OutputDir, newName);
+
+                    if (Directory.Exists(destinationOldName))
+                    {
+                        try
+                        {
+                            Directory.Move(destinationOldName, destinationNewName);
+                            Log.Information(" {0} foi renomeado para {1}", destinationOldName, destinationNewName);
+                        }
+                        catch (Exception e)
+                        {
+                            HandleError(e);
+                        }
+                    }
+                    else
+                    {
+                        Log.Information("[RENOMEAÇÃO DE DIRETÓRIO] Diretório {0} não existe no diretório de origem.", destinationOldName);
+                    }
 
                     ChangeLabel("lastChangeLabel", DateTime.Now.ToShortTimeString(), Color.Green);
                     ChangeLabel("statusLabel", "Está sincronizando", Color.Green);
@@ -213,7 +327,7 @@ namespace SyncFolders
 
                 case DirectoryChangeEventType.OnFullSave:
                 {
-                    CopyDir.DirectoryCopy(InputDir, OutputDir, true, true);
+                    DirUtils.DirectoryCopy(InputDir, OutputDir, true, true);
                     break;
                 }
 
@@ -230,34 +344,47 @@ namespace SyncFolders
 
         private void OnRename(object sender, RenamedEventArgs e)
         {
-            Console.WriteLine(" {0} foi renomeado para {1}", e.OldFullPath, e.FullPath);
-            HandleChange(DirectoryChangeEventType.OnRename, "", "", e.OldName, e.OldFullPath, 
-                                                                                e.Name, e.FullPath);
+            Log.Information(" {0} foi renomeado para {1}", e.OldFullPath, e.FullPath);
+
+            HandleChange(
+                !string.IsNullOrWhiteSpace(Path.GetExtension(e.OldFullPath))
+                    ? DirectoryChangeEventType.OnRename
+                    : DirectoryChangeEventType.OnRenameDir, "", "", e.OldName, e.OldFullPath,
+                e.Name, e.FullPath
+            );
         }
 
         private void OnDeleted(object sender, FileSystemEventArgs e)
         {
-            Console.WriteLine("{0}, no local {1} foi deletado.", e.Name, e.FullPath);
-            HandleChange(DirectoryChangeEventType.OnDelete, e.Name, e.FullPath);
+            Log.Information("{0}, no local {1} foi deletado.", e.Name, e.FullPath);
+            HandleChange(
+                !string.IsNullOrWhiteSpace(Path.GetExtension(e.FullPath))
+                ? DirectoryChangeEventType.OnDelete 
+                : DirectoryChangeEventType.OnDeleteDir, e.Name, e.FullPath
+            );
         }
 
         private void OnCreated(object sender, FileSystemEventArgs e)
         {
-            Console.WriteLine("{0}, no local {1} foi criado.", e.Name, e.FullPath);
-            HandleChange(DirectoryChangeEventType.OnCreate, e.Name, e.FullPath);
+            Log.Information("{0}, no local {1} foi criado.", e.Name, e.FullPath);
+            HandleChange(
+                !string.IsNullOrWhiteSpace(Path.GetExtension(e.FullPath)) 
+                ? DirectoryChangeEventType.OnCreate 
+                : DirectoryChangeEventType.OnCreateDir, e.Name, e.FullPath
+            );
         }
 
         private void OnChanged(object sender, FileSystemEventArgs e)
         {
-            Console.WriteLine("{0}, no local {1} foi modificado.", e.Name, e.FullPath);
+            Log.Information("{0}, no local {1} foi modificado.", e.Name, e.FullPath);
             HandleChange(DirectoryChangeEventType.OnChange, e.Name, e.FullPath);
         }
         private void OnFullSave(object sender, ElapsedEventArgs e)
         {
 
-            Console.WriteLine("Iniciando a cópia completa do diretório {0}...", InputDir);
+            Log.Information("Iniciando a cópia completa do diretório {0}...", InputDir);
             HandleChange(DirectoryChangeEventType.OnFullSave);
-            Console.WriteLine("Diretório {0} copiado com sucesso.", InputDir);
+            Log.Information("Diretório {0} copiado com sucesso.", InputDir);
 
             ChangeLabel("lastChangeLabel", DateTime.Now.ToShortTimeString(), Color.Green);
             ChangeLabel("statusLabel", "Está sincronizando", Color.Green);

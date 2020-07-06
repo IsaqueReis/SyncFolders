@@ -1,8 +1,10 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using Serilog;
 
 namespace SyncFolders.Util
 {
-    public class CopyDir
+    public class DirUtils
     {
         /// <summary>
         /// Pedaço de código retirado de: https://docs.microsoft.com/pt-br/dotnet/standard/io/how-to-copy-directories
