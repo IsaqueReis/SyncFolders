@@ -10,9 +10,9 @@ O dowload do executável pode ser feito em: https://github.com/IsaqueReis/SyncFo
 
 Lista de Tarefas
 ===========================================
-
 - [x] Se a pasta não existir no diretório de destino, crie 
 - [x] Configurar o timer de atualização 
+- [ ] Permitir a execução em background
 - [ ] Configurar pasta padrão
 - [ ] Configurar filtros para o tipo de arquivo que deve pode criado/modificado
 - [ ] Cópia de arquivos e diretórios assíncrona 
